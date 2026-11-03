@@ -5,17 +5,22 @@ authors:
   - Ilya Boyandin in conversation with Geertjan Wielenga & Tim Cox
 thumb: "/images/blog/thumbs/spatial-joins.svg"
 image: "/images/blog/thumbs/spatial-joins.png"
-excerpt: "TL;DR: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local-first analytical applications, and Foursquare's Spatial Desktop is the largest application built on it so far."
+excerpt: "Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local-first analytical applications, and Foursquare's Spatial Desktop is the largest application built on it so far."
 tag: using-duckdb
 ---
 
-[Ilya Boyandin](https://www.linkedin.com/in/ilyabo/) is a software engineer and the creator of [SQLRooms](https://sqlrooms.org). He has a PhD in geospatial data visualization. He worked on urban mobility analytics at Teralytics before joining Unfolded, the company behind the open-source projects [deck.gl](https://deck.gl) and [kepler.gl](https://kepler.gl). Foursquare later acquired Unfolded, and he has worked there since.
+[Ilya Boyandin](https://www.linkedin.com/in/ilyabo/) is a software engineer and the creator of [SQLRooms](https://sqlrooms.org). He has a PhD in geospatial data visualization. He worked on urban mobility analytics at Teralytics before joining Unfolded, the company founded by the Uber visualization team behind the open-source projects [deck.gl](https://deck.gl) and [kepler.gl](https://kepler.gl). Foursquare later acquired Unfolded, and he has worked there since.
 
 ## How DuckDB Entered the Picture
 
 At Teralytics, Ilya's team used ClickHouse. Like DuckDB, it is columnar and built for analytics, but it usually runs on provisioned servers in a cluster. **“ClickHouse can be used locally, but it's not really meant for that, unlike DuckDB.”**
 
-He first used DuckDB in [Flowmap.city](https://www.flowmap.city/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains. He had little budget for infrastructure, and DuckDB already had a [WebAssembly build]({% link docs/current/clients/wasm/overview.md %}) that runs in the browser. In Flowmap.city, users upload files to object storage, which is cheap or often free. When someone opens a project, DuckDB-Wasm starts in the browser and loads the files from the bucket over the [`s3://`]({% link docs/current/core_extensions/httpfs/s3api.md %}) protocol:
+He first used DuckDB in [Flowmap.city](https://www.flowmap.city/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
+He had little budget for infrastructure, and DuckDB already had a [WebAssembly build]({% link docs/current/clients/wasm/overview.md %}) that runs in the browser.
+
+<video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4"
+       controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
+In Flowmap.city, users upload files to object storage, which is cheap or often free. When someone opens a project, DuckDB-Wasm starts in the browser and loads the files from the bucket over the [`s3://`]({% link docs/current/core_extensions/httpfs/s3api.md %}) protocol:
 
 ```sql
 SELECT *
@@ -40,7 +45,12 @@ FROM 'sales.csv'
 LIMIT 10;
 ```
 
-Developers outside Foursquare have built on the framework as well. Amar Harolikar customized SQLRooms to analyze an 11-million-row, 1.6 GB CSV file in natural language, entirely in the browser. [Cosmograph](https://ilya.boyandin.me/p/cosmograph), a tool for visualizing large network graphs and machine learning embeddings built by Nikita Rokotyan and his team, is another application built on the framework.
+Developers outside Foursquare have built on the framework as well. Amar Harolikar customized SQLRooms to analyze an 11-million-row, 1.6 GB CSV file in natural language, entirely in the browser.
+
+[Cosmograph](https://ilya.boyandin.me/p/cosmograph), a tool for visualizing large network graphs and machine learning embeddings Ilya has been helping [Nikita Rokotyan](https://rokotyan.com/) and his team to build, is another application built on the framework.
+
+<video src="https://ilya.boyandin.me/media/projects/cosmograph/cosmograph.mp4"
+       controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
 
 Ilya's interest in local-first software shaped the framework. **“You should own your data. It should live on your computer, not in the Cloud. It can be synced via the cloud, but you decide when to keep it local and when not.”**
 
