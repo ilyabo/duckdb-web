@@ -16,27 +16,21 @@ tag: using-duckdb
 He first used DuckDB in [Flowmap City](https://www.Flowmap City/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
 With a small infrastructure budget, Ilya wanted to keep Flowmap City simple to run. DuckDB can run directly inside an app, and its [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}) let Flowmap City run queries in each user's browser without a database server. Users upload their files to ab object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using presigned HTTPS URLs and can then query them.
 
-As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger dozens of queries:
+As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger a number of queries:
 
 <video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4" controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
 
-**We can do all the analytics and visualization in the browser,”** Ilya says, **“which is very convenient and has very low requirements on the infrastructure.”**
-
-Flowmap City showed him that an analytical application could work with no database server behind it.
+**“We can do much of the data analytics and visualization in the browser,”** Ilya says, **“which is very convenient: it has very low requirements on the infrastructure, and can often be faster because it saves round trips to the server for each query.”**
 
 ## From a Side Project to SQLRooms
 
-For Flowmap City, Ilya had built a table view, a SQL editor, a schema tree and query execution in the browser. None of it was specific to mobility data. He extracted these pieces into a standalone framework called [SQLRooms](https://ilya.boyandin.me/p/sqlrooms), which he continues to develop as open source.
+Much of the core functionality and UI of Flowmap City was not specific to mobility data and could be reused in other projects. So Ilya decided to extract these pieces into a standalone framework called [SQLRooms](https://ilya.boyandin.me/p/sqlrooms), which he now continues to develop as an open source project.
 
-SQLRooms is a set of building blocks for creating DuckDB-backed analytics applications in React. Developers combine only the packages and state slices their app needs. At its center is the Room, a self-contained workspace that holds the data along with the analysis done on it. Each Room is connected to its own DuckDB instance, running natively on a device or as WebAssembly in a browser. The framework's DuckDB wrapper handles file loading, so data can be queried as soon as it is added. All computation happens on the user's own machine, whether that is a browser tab or a desktop app. The framework also has built-in support for AI agents that write and run SQL.
+SQLRooms is a set of building blocks for creating DuckDB-backed analytics applications in React. It has a very modular architecture: developers can pick the functionality they need and compose it into a very interoperable store. At its center is the Room, a self-contained workspace that holds the data along with the artifacts created. Each Room is connected to a DuckDB instance which can run natively on a device or in browser.
+The framework's DuckDB wrapper handles data loading, so data can be queried as soon as it is added.
+All computation happens on the user's own machine, whether that is a browser tab or a desktop app. The framework also has built-in support for AI agents that write and run SQL.
 
-The quickest way in is the [minimal example](https://sqlrooms.org/examples), a small Vite and React app that loads a CSV file and runs SQL queries against it:
-
-```sql
-SELECT *
-FROM 'sales.csv'
-LIMIT 10;
-```
+The quickest way in is the [minimal example](https://sqlrooms.org/examples), a small Vite and React app that loads a CSV file and runs SQL queries against it.
 
 ## Graph Analytics on the Fly with Cosmograph
 
@@ -54,11 +48,7 @@ Ilya says this lets the app **“work with even more data than we can render at 
 
 ## One Database File, One Analytical Project
 
-In SQLRooms applications, DuckDB can store the project along with the data. In Cosmograph, **“the project file you create is actually a DuckDB database file, in which we store both the data users add to the project and all the artifacts they create within it.”** Opening a project is a single `ATTACH`:
-
-```sql
-ATTACH 'project.duckdb';
-```
+In SQLRooms applications, DuckDB can store the project along with the data. In Cosmograph, **“the project file you create is actually a DuckDB database file, in which we store both the data users add to the project and all the artifacts they create within it.”**
 
 A whole project then lives in one file that a user can move around like any other document. Ilya's current work on SQLRooms builds on this idea.
 
@@ -76,11 +66,33 @@ Spatial Desktop followed [kepler.gl](kepler.gl), the free client-only tool, and 
 
 DuckDB ships with the application, so users install nothing extra. Ilya acknowledges that a desktop application makes it harder to share projects and edit them together. In exchange, queries don't wait on the network and the data stays on the user's machine. Foursquare also has no database servers to run. Modern laptops are powerful, he adds, and their GPUs are good at visualization. **“There is a bit of a resurrection of desktop applications right now.”**
 
+Spatial Desktop has been tested with datasets from tens of thousands of points up to several gigabytes. It renders maps with deck.gl, which slows down once a map holds hundreds of thousands of objects. The team got around this with dynamic tiling built on DuckDB's [spatial extension]({% link docs/2.0/core_extensions/spatial/overview.md %}).
+
+Web maps usually load pre-generated tiles for the area in view at the current zoom level. Spatial Desktop generates those tiles at query time instead. A query filters the features to the viewport. As the user zooms out, it simplifies polygons, and it samples the data where needed. The spatial extension's [`ST_AsMVT`]({% link docs/2.0/core_extensions/spatial/functions.md %}#st_asmvt) function then encodes the result as a binary tile in MVT, a widely supported format:
+
+```sql
+SELECT ST_AsMVT({
+    'geometry': ST_AsMVTGeom(
+        geometry,
+        ST_Extent(ST_TileEnvelope(⟨z⟩, ⟨x⟩, ⟨y⟩)),
+        4096,
+        256,
+        false
+    ),
+    'id': id
+}) AS tile
+FROM features
+WHERE ST_Intersects(geometry, ST_TileEnvelope(⟨z⟩, ⟨x⟩, ⟨y⟩));
+```
+
+The app's web server then exposes an HTTP endpoint with `x,y,z` parameters which can serve data for each map tile.
+With this dynamic tiling approach, we the app can represent more data than can be rendered on the map at once. You can see how the tiles are loaded gradually as they are prepared on the fly:
+
+<video src="https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/fsq-spatial-desktop-dynamic-tiling-4-1500.mp4" controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
+
 ## Where SQLRooms Goes Next
 
 The project file in Cosmograph points to a broader idea that Ilya is developing in SQLRooms, where the DuckDB file carries the analysis as well as the data. He is building a Canvas module with SQL query cells and Vega-Lite chart cells, alongside a Notebooks module. An engine underneath tracks how cells depend on each other and reruns downstream cells when the data changes.
-
-He is also adding real-time collaboration based on the [Loro CRDT](https://loro.dev/) library. Because DuckDB treats the data as read-only, only the interface state needs to be synchronized between collaborators. That state can itself be stored in DuckDB, either on a shared server or on a local machine for offline work.
 
 At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, Ilya showed a SQLRooms command-line tool that works with a DuckDB database and presents the analysis in a notebook-like style. The direction is a single DuckDB file that holds an entire analytical workspace, which someone can open elsewhere and continue. The design is still changing.
 
