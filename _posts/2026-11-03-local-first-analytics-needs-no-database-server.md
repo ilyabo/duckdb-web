@@ -1,39 +1,32 @@
 ---
 layout: post
-title: Local-First Analytics Needs No Database Server
+title: Local Analytics Needs No Database Server
 authors:
   - Ilya Boyandin in conversation with Geertjan Wielenga & Tim Cox
 thumb: /images/blog/thumbs/spatial-joins.svg
 image: /images/blog/thumbs/spatial-joins.png
-excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local-first analytical applications, and Cosmograph, a browser-native graph analytics tool.
+excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local analytical applications, and Cosmograph, a browser-native graph analytics tool.
 tag: using-duckdb
 ---
 
-[Ilya Boyandin](https://www.linkedin.com/in/ilyabo/) is a software engineer, the creator of [SQLRooms](https://sqlrooms.org) and co-creator of [Cosmograph](https://cosmograph.app). He has a PhD in geospatial data visualization. He worked on urban mobility analytics at Teralytics before joining Unfolded, the company founded by the Uber visualization team behind the open-source projects [deck.gl](https://deck.gl) and [kepler.gl](https://kepler.gl). ~~Foursquare later acquired Unfolded, and he has worked there since.~~
+[Ilya Boyandin](https://www.linkedin.com/in/ilyabo/) is a software engineer, the creator of [SQLRooms](https://sqlrooms.org), [Flowmap City](https://Flowmap City) and co-creator of [Cosmograph](https://cosmograph.app). He worked on geospatial data analytics at Unfolded, the company founded by the Uber visualization team behind the open-source projects [deck.gl](https://deck.gl) and [kepler.gl](https://kepler.gl), which was later acquired by Foursquare.
 
 ## How DuckDB Entered the Picture
 
-At Teralytics, Ilya's team used ClickHouse. Like DuckDB, it is columnar and built for analytics, but it usually runs on provisioned servers in a cluster. **“ClickHouse can be used locally, but it's not really meant for that, unlike DuckDB.”**
+He first used DuckDB in [Flowmap City](https://www.Flowmap City/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
+With a small infrastructure budget, Ilya wanted to keep Flowmap City simple to run. DuckDB can run directly inside an app, and its [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}) let Flowmap City run queries in each user's browser without a database server. Users upload their files to ab object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using presigned HTTPS URLs and can then query them.
 
-He first used DuckDB in [Flowmap.city](https://www.flowmap.city/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
-He had little budget for infrastructure, and DuckDB already had a [WebAssembly build]({% link docs/current/clients/wasm/overview.md %}) that runs in the browser.
+As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger dozens of queries:
 
-<video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4"
-       controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
-In Flowmap.city, users upload files to object storage, which is cheap or often free. When someone opens a project, DuckDB-Wasm starts in the browser and loads the files from the bucket over the [`s3://`]({% link docs/current/core_extensions/httpfs/s3api.md %}) protocol:
+<video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4" controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
 
-```sql
-SELECT *
-FROM 's3://⟨bucket⟩/⟨project⟩/flows.parquet';
-```
+**We can do all the analytics and visualization in the browser,”** Ilya says, **“which is very convenient and has very low requirements on the infrastructure.”**
 
-**“They can do all the analytics and visualization in the browser,”** Ilya says, **“which is very convenient and has very low requirements on the infrastructure.”**
-
-Flowmap.city showed him that an analytical application could work with no database server behind it.
+Flowmap City showed him that an analytical application could work with no database server behind it.
 
 ## From a Side Project to SQLRooms
 
-For Flowmap.city, Ilya had built a table view, a SQL editor, a schema tree and query execution in the browser. None of it was specific to mobility data. He extracted these pieces into a standalone framework called [SQLRooms](https://ilya.boyandin.me/p/sqlrooms), which he continues to develop as open source.
+For Flowmap City, Ilya had built a table view, a SQL editor, a schema tree and query execution in the browser. None of it was specific to mobility data. He extracted these pieces into a standalone framework called [SQLRooms](https://ilya.boyandin.me/p/sqlrooms), which he continues to develop as open source.
 
 SQLRooms is a set of building blocks for creating DuckDB-backed analytics applications in React. Developers combine only the packages and state slices their app needs. At its center is the Room, a self-contained workspace that holds the data along with the analysis done on it. Each Room is connected to its own DuckDB instance, running natively on a device or as WebAssembly in a browser. The framework's DuckDB wrapper handles file loading, so data can be queried as soon as it is added. All computation happens on the user's own machine, whether that is a browser tab or a desktop app. The framework also has built-in support for AI agents that write and run SQL.
 
@@ -44,7 +37,6 @@ SELECT *
 FROM 'sales.csv'
 LIMIT 10;
 ```
-
 
 ## Graph Analytics on the Fly with Cosmograph
 
@@ -100,6 +92,6 @@ Ilya's five-minute talk from DuckCon #7 gives a short tour of this direction.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fV1LXnPl4ng" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
-SQLRooms is open source and available at [sqlrooms.org](https://sqlrooms.org), where the example apps are a good place to start. [Flowmap.city](https://www.flowmap.city/) and [Cosmograph](https://cosmograph.app) are free to try.
+SQLRooms is open source and available at [sqlrooms.org](https://sqlrooms.org), where the example apps are a good place to start. [Flowmap City](https://www.Flowmap City/) and [Cosmograph](https://cosmograph.app) are free to try.
 
 We would like to thank Ilya for the conversation. You can follow his writing on DuckDB and SQLRooms on [his blog](https://ilya.boyandin.me/). And if you are reading this, are using DuckDB, and would like to share your story, drop us a line at [quack@duckdb.org](mailto:quack@duckdb.org).
