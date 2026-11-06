@@ -5,18 +5,18 @@ authors:
   - Ilya Boyandin in conversation with Geertjan Wielenga & Tim Cox
 thumb: /images/blog/thumbs/spatial-joins.svg
 image: /images/blog/thumbs/spatial-joins.png
-excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local analytical applications, and Cosmograph, a browser-native graph analytics tool.
+excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local analytical applications, which was used to build Foursquare Spatial Desktop, a geospatial analytics app, and Cosmograph, a browser-native graph analytics tool.
 tag: using-duckdb
 ---
 
-[Ilya Boyandin](https://www.linkedin.com/in/ilyabo/) is a software engineer, the creator of [SQLRooms](https://sqlrooms.org), [Flowmap City](https://Flowmap City) and co-creator of [Cosmograph](https://cosmograph.app). He worked on geospatial data analytics at Unfolded, the company founded by the Uber visualization team behind the open-source projects [deck.gl](https://deck.gl) and [kepler.gl](https://kepler.gl), which was later acquired by Foursquare.
+[Ilya Boyandin](https://www.linkedin.com/in/ilyabo/) is a software engineer, the creator of [SQLRooms](https://sqlrooms.org), [FlowmapBlue](https://flowmap.blue), and [Flowmap City](https://Flowmap City). He worked on geospatial data analytics at Unfolded, the company founded by the team behind the open-source data visualization projects [deck.gl](https://deck.gl) and [kepler.gl](https://kepler.gl), which was later acquired by Foursquare.
 
 ## How DuckDB Entered the Picture
 
 He first used DuckDB in [Flowmap City](https://www.Flowmap City/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
-With a small infrastructure budget, Ilya wanted to keep Flowmap City simple to run. DuckDB can run directly inside an app, and its [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}) let Flowmap City run queries in each user's browser without a database server. Users upload their files to ab object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using presigned HTTPS URLs and can then query them.
+With a small infrastructure budget, Ilya wanted to keep Flowmap City simple to run. DuckDB can run directly inside an app, and its [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}) let Flowmap City run queries in each user's browser without a database server. Users upload their files to an object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using presigned HTTPS URLs and can then query them.
 
-As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger a number of queries:
+As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger a number of queries preparing the data for the current viewport:
 
 <video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4" controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
 
@@ -34,11 +34,10 @@ The quickest way in is the [minimal example](https://sqlrooms.org/examples), a s
 
 ## Graph Analytics on the Fly with Cosmograph
 
-[Cosmograph](https://ilya.boyandin.me/p/cosmograph), a tool for graph analytics, Ilya has been building alongside with [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen, is another application on top of the framework. It allows you to visualize graphs with millions of edges directly in the browser and use SQL Rooms features, like an AI assistant, to analyze your data.
+Other developers have built on the SQLRooms framework as well. [Cosmograph](https://ilya.boyandin.me/p/cosmograph), a tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen. It allows you to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
 
 <video src="https://ilya.boyandin.me/media/projects/cosmograph/cosmograph.mp4"
        controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
-Other developers have built on the framework as well. Amar Harolikar customized SQLRooms to analyze an 11-million-row, 1.6 GB CSV file in natural language, entirely in the browser.
 
 Ilya's interest in local-first software shaped the framework. **“You should own your data. It should live on your computer, not in the Cloud. It can be synced via the cloud, but you decide when to keep it local and when not.”**
 
