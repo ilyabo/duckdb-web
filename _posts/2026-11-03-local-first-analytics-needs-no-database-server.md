@@ -20,7 +20,7 @@ As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL quer
 
 <video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4" controls muted loop playsinline style="width: 100%; height: auto;"></video>
 
-**“We can do much of the data analytics and visualization in the browser now,”** Ilya says, **“which is very convenient: this approach has very low infrastructure requirements, and can often be faster because it saves round trips to the server for each query.”**
+Ilya explains: **“We can now do much of the analysis and visualization in the browser. This keeps infrastructure requirements low and can be faster because queries don’t need a round trip to the server.”**
 
 ## From a Side Project to SQLRooms
 
@@ -38,7 +38,7 @@ Ilya's interest in local-first software shaped the framework. **“You should ow
 
 At Foursquare, Ilya's team has been developing [Foursquare Spatial Desktop](https://ilya.boyandin.me/p/fsq-spatial-desktop), a desktop application for exploring geospatial data built with SQLRooms. It combines DuckDB's analytical engine with [kepler.gl](https://kepler.gl/)'s visualization tools. The app builds on the team's experience with kepler.gl and [Foursquare Studio](https://studio.foursquare.com), its cloud-hosted geospatial analytics platform.
 
-**“For this particular product, DuckDB embedded into the desktop app is just the perfect fit,”** he says. **“It enables analysis workflows which users can execute locally.”** SQLite is embeddable too, he says, but it is not column-oriented and was not designed for analytics on larger datasets.
+Ilya explains: **“For this particular product, DuckDB embedded into the desktop app is just the perfect fit. It enables analysis workflows which users can execute locally.”** SQLite is embeddable too, he says, but it is not column-oriented and was not designed for analytics on larger datasets.
 
 ![Foursquare Spatial Desktop](https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/fsq-spatial-desktop-earthquakes.webp)
 
@@ -104,29 +104,31 @@ Cosmograph has been tested with datasets ranging from tens of thousands of point
 
 ## When the Agent Writes the SQL
 
-The SQLRooms integration also brought AI-assisted analysis to Cosmograph. **“This combination of SQL and AI agents is actually quite powerful,”** Ilya says. **“SQL has such a long history, so many documents on the web explaining how to use it, and LLMs are pretty good at generating it.”** Users ask a question and the agent writes and runs the DuckDB queries, so they don't need to know SQL.
+The SQLRooms integration also brought AI-assisted analysis to the apps. **“The combination of SQL and AI agents is actually quite powerful,”** Ilya says. **“SQL has a long history, there are many documents on the web explaining how to use it, so LLMs are pretty good at generating it.”**
 
-The SQLRooms-powered assistant generates SQL queries and chart specifications, which the application executes and renders locally. This allows the source dataset to stay on the user's machine, while database schemas and selected query results can be shared with the AI provider to help answer questions.
+Users can ask questions in natural language. The assistant generates SQL queries and chart specifications, which the application executes and renders locally. The source dataset can stay on the user's machine, while database schemas and selected query results can be shared with the AI provider to help answer questions.
 
-The following SQLRooms example shows this workflow:
+In Spatial Desktop, the assistant can generate SQL to retrieve data from available sources and calculate a combined suitability score. The example below uses this workflow to explore wine-growing suitability across Italy, pairing the resulting map with AI-generated regional analysis:
+
+![Foursquare Spatial Desktop showing a wine-growing suitability map of Italy alongside AI-generated regional analysis](https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/italy-wine-suitability-with-sidebar.webp)
+
+## Where SQLRooms Goes Next
+
+Ilya is extending SQLRooms' workspace model so users can bring their analysis together in interactive documents. These documents combine text with blocks such as charts or SQL queries, letting users explain their findings alongside the analysis that produced them.
 
 <video src="https://ilya.boyandin.me/media/projects/sqlrooms/sqlrooms-cars-document.mp4"
        controls muted loop playsinline style="width: 100%; height: auto;"></video>
 
-## Where SQLRooms Goes Next
+At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, he demonstrated a SQLRooms command-line tool for working with data through a notebook-style interface and both the data and the created artifacts are saved in the same DuckDB database file. The goal is to let users open and continue work on the same analytical project through these different interfaces. The design of the CLI tool is still evolving.
 
-Ilya is currently extending SQLRooms workspace model with configurable artifacts, in particular, Notion-like block documents which can contain interactive blocks of different kinds.
+### Watch the DuckCon Talk
 
-At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, he demonstrated a SQLRooms command-line tool for working with a DuckDB database through a notebook-style interface. The goal is to let users open and continue work on the same analytical project through these different interfaces. The design of the CLI tool is still evolving.
-
-## Watch the DuckCon Talk
-
-Ilya's five-minute talk from DuckCon #7 gives a short tour of this direction.
+Ilya's [five-minute talk](https://www.youtube.com/watch?v=fV1LXnPl4ng) from DuckCon #7 gives a short tour of this direction.
 
 <div class="video-container">
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fV1LXnPl4ng" title="YouTube video player" frameborder="0" allow="accelerometer;; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fV1LXnPl4ng" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
 SQLRooms is open source and available at [sqlrooms.org](https://sqlrooms.org). Its [examples page](https://sqlrooms.org/examples) is a good place to start. [Flowmap City](https://flowmap.city/), [Foursquare Spatial Desktop](https://foursquare.com/products/spatial-desktop/), and [Cosmograph](https://cosmograph.app) are free to try.
 
-We would like to thank Ilya for the conversation. You can follow his writing on DuckDB and SQLRooms on [his blog](https://ilya.boyandin.me/). And if you are reading this, are using DuckDB, and would like to share your story, drop us a line at [quack@duckdb.org](mailto:quack@duckdb.org).
+We would like to thank Ilya for the conversation. You can follow his writing on DuckDB and SQLRooms on [his website](https://ilya.boyandin.me/). And if you are reading this, are using DuckDB, and would like to share your story, drop us a line at [quack@duckdb.org](mailto:quack@duckdb.org).
