@@ -13,43 +13,37 @@ tag: using-duckdb
 
 ## How DuckDB Entered the Picture
 
-He first used DuckDB in [Flowmap City](https://www.Flowmap City/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
-With a small infrastructure budget, Ilya wanted to keep Flowmap City simple to run. DuckDB can run directly inside an app, and its [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}) let Flowmap City run queries in each user's browser without a database server. Users upload their files to an object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using presigned HTTPS URLs and can then query them.
+Ilya first used DuckDB in [Flowmap City](https://www.Flowmap City/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
+With a small budget, Ilya wanted to keep Flowmap City easy to run with low infrastructure requirements. Thanks to DuckDB's [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}), Flowmap City can execute queries directly in end-user's browser without a database server. Users can upload their data files which are then saved as Parquet files in an S3 object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using [presigned HTTPS URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html), and can query them then.
 
 As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger a number of queries preparing the data for the current viewport:
 
 <video src="https://ilya.boyandin.me/media/projects/flowmap-city/flowmap-city.mp4" controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
 
-**“We can do much of the data analytics and visualization in the browser,”** Ilya says, **“which is very convenient: it has very low requirements on the infrastructure, and can often be faster because it saves round trips to the server for each query.”**
+**“We can do much of the data analytics and visualization in the browser,”** Ilya says, **“which is very convenient: it has very low infrastructure requirements, and can often be faster because it saves round trips to the server for each query.”**
 
 ## From a Side Project to SQLRooms
 
-Much of the core functionality and UI of Flowmap City was not specific to mobility data and could be reused in other projects. So Ilya decided to extract these pieces into a standalone framework called [SQLRooms](https://ilya.boyandin.me/p/sqlrooms), which he now continues to develop as an open source project.
+Much of the core functionality and UI of Flowmap City was not specific to mobility data and could be reused in other projects. So Ilya decided to extract these pieces into a standalone framework called SQLRooms, which he now continues to develop as an open source project.
 
-SQLRooms is a set of building blocks for creating DuckDB-backed analytics applications in React. It has a very modular architecture: developers can pick the functionality they need and compose it into a very interoperable store. At its center is the Room, a self-contained workspace that holds the data along with the artifacts created. Each Room is connected to a DuckDB instance which can run natively on a device or in browser.
-The framework's DuckDB wrapper handles data loading, so data can be queried as soon as it is added.
-All computation happens on the user's own machine, whether that is a browser tab or a desktop app. The framework also has built-in support for AI agents that write and run SQL.
+[SQLRooms](https://sqlrooms.org/) is a modular toolkit for building DuckDB-powered analytics applications in React. It provides building blocks for loading data, writing SQL, displaying tables, creating visualizations, and integrating AI assistants. Developers can combine the pieces they need with their own components to build applications such as a map explorer or a graph analysis tool.
+
+These components work together within a _Room_: a workspace that brings together datasets and the analysis artifacts users create, such as saved queries, charts, and maps, or documents, along with the application state. SQLRooms handles query execution through a shared DuckDB connection, so developers can focus on how users explore their data and build on their work.
+
+DuckDB can run directly in the browser through WebAssembly or natively on the user's machine in a desktop application, allowing data analysis without a remote database server. Optional AI assistants can write SQL and use query results to answer questions, while the queries themselves run against the application's DuckDB instance.
+
+Ilya's interest in local-first software shaped the framework. **“You should own your data. It can live on your computer, not everything has to live in the Cloud. It can be synced via the cloud, but you decide when to keep it local and when not.”**
 
 The quickest way in is the [minimal example](https://sqlrooms.org/examples), a small Vite and React app that loads a CSV file and runs SQL queries against it.
 
 ## Graph Analytics on the Fly with Cosmograph
 
-Other developers have built on the SQLRooms framework as well. [Cosmograph](https://ilya.boyandin.me/p/cosmograph), a tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen. It allows you to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
+[Cosmograph](https://ilya.boyandin.me/p/cosmograph) is another project built on the SQLRooms framework. It's a tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen; Ilya helped with the SQLRooms integration. It allows you to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
 
 <video src="https://ilya.boyandin.me/media/projects/cosmograph/cosmograph.mp4"
        controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
 
-Ilya's interest in local-first software shaped the framework. **“You should own your data. It should live on your computer, not in the Cloud. It can be synced via the cloud, but you decide when to keep it local and when not.”**
-
-Cosmograph has been tested with datasets ranging from tens of thousands of points to several million. Previously, it was practically impossible to have an analytical workflow in the browser that could manage such large amounts of data due to the browser's memory and processing limits. With DuckDB WASM, we were able to parse huge data files without blocking the main thread or consuming browser page memory. Moreover, DuckDB's fast engine allows us to perform all sorts of summarization and filtering queries on the fly with unprecedented performance. Furthermore, the data is stored in a columnar format and can be passed to the GPU for rendering without additional processing.
-
-Ilya says this lets the app **“work with even more data than we can render at once.”**
-
-## One Database File, One Analytical Project
-
-In SQLRooms applications, DuckDB can store the project along with the data. In Cosmograph, **“the project file you create is actually a DuckDB database file, in which we store both the data users add to the project and all the artifacts they create within it.”**
-
-A whole project then lives in one file that a user can move around like any other document. Ilya's current work on SQLRooms builds on this idea.
+Cosmograph has been tested with datasets ranging from tens of thousands of points to several million. Previously, it was practically impossible to have an analytical workflow in the browser that could manage such large amounts of data due to the browser's memory and processing limits. With DuckDB WASM, we were able to parse huge data files without blocking the main thread or consuming browser page memory. Moreover, DuckDB's fast engine allows us to perform all sorts of summarization and filtering queries on the fly with unprecedented performance. Furthermore, the data is stored in a columnar format and can often be passed to the GPU for rendering without much additional processing.
 
 ## When the Agent Writes the SQL
 
@@ -93,7 +87,13 @@ With this dynamic tiling approach, we the app can represent more data than can b
 
 The project file in Cosmograph points to a broader idea that Ilya is developing in SQLRooms, where the DuckDB file carries the analysis as well as the data. He is building a Canvas module with SQL query cells and Vega-Lite chart cells, alongside a Notebooks module. An engine underneath tracks how cells depend on each other and reruns downstream cells when the data changes.
 
+## One Database File, One Analytical Project
+
 At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, Ilya showed a SQLRooms command-line tool that works with a DuckDB database and presents the analysis in a notebook-like style. The direction is a single DuckDB file that holds an entire analytical workspace, which someone can open elsewhere and continue. The design is still changing.
+
+In SQLRooms applications, DuckDB can store the project along with the data. **“the project file you create is actually a DuckDB database file, in which we store both the data users add to the project and all the artifacts they create within it.”**
+
+A whole project then lives in one file that a user can move around like any other document. Ilya's current work on SQLRooms builds on this idea.
 
 ## Watch the DuckCon Talk
 
