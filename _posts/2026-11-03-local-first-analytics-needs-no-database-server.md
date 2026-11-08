@@ -113,17 +113,11 @@ The following SQLRooms example shows this workflow:
 <video src="https://ilya.boyandin.me/media/projects/sqlrooms/sqlrooms-cars-document.mp4"
        controls muted loop playsinline style="width: 100%; height: auto;"></video>
 
-## One Database File, One Analytical Project
-
-In Cosmograph, Ilya explains, **“The project file you create is actually a DuckDB database file, in which we store both the data users add to the project and all the artifacts they create within it.”**
-
-A whole project then lives in one file that a user can move around like any other document.
-
 ## Where SQLRooms Goes Next
 
-Ilya is extending this workspace model with a Canvas module containing SQL query and Vega-Lite chart cells, alongside a Notebooks module. A shared dependency engine reruns downstream cells when their inputs change.
+Ilya is currently extending SQLRooms workspace model with configurable artifacts, in particular, Notion-like block documents which can contain interactive blocks of different kinds.
 
-At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, he demonstrated a SQLRooms command-line tool for working with a DuckDB database through a notebook-style interface. The goal is to let users open and continue work on the same analytical project through these different interfaces. The design is still evolving.
+At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, he demonstrated a SQLRooms command-line tool for working with a DuckDB database through a notebook-style interface. The goal is to let users open and continue work on the same analytical project through these different interfaces. The design of the CLI tool is still evolving.
 
 ## Watch the DuckCon Talk
 
@@ -133,6 +127,6 @@ Ilya's five-minute talk from DuckCon #7 gives a short tour of this direction.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fV1LXnPl4ng" title="YouTube video player" frameborder="0" allow="accelerometer;; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
-SQLRooms is open source and available at [sqlrooms.org](https://sqlrooms.org). Its [minimal example](https://sqlrooms.org/examples), a small Vite and React app that loads a CSV file and runs SQL queries, is a good place to start. [Flowmap City](https://flowmap.city/), [Foursquare Spatial Desktop](https://foursquare.com/products/spatial-desktop/), and [Cosmograph](https://cosmograph.app) are free to try.
+SQLRooms is open source and available at [sqlrooms.org](https://sqlrooms.org). Its [examples page](https://sqlrooms.org/examples) is a good place to start. [Flowmap City](https://flowmap.city/), [Foursquare Spatial Desktop](https://foursquare.com/products/spatial-desktop/), and [Cosmograph](https://cosmograph.app) are free to try.
 
 We would like to thank Ilya for the conversation. You can follow his writing on DuckDB and SQLRooms on [his blog](https://ilya.boyandin.me/). And if you are reading this, are using DuckDB, and would like to share your story, drop us a line at [quack@duckdb.org](mailto:quack@duckdb.org).
