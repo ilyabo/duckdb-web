@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Local Analytics Needs No Database Server
+title: Local Analytics Doesn't Need a Database Server
 authors:
   - Ilya Boyandin in conversation with Geertjan Wielenga & Tim Cox
 thumb: /images/blog/thumbs/spatial-joins.svg
 image: /images/blog/thumbs/spatial-joins.png
-excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser without a database server. He later turned that setup into SQLRooms, an open-source toolkit for local analytics applications. Foursquare Spatial Desktop, Flowmap City and Cosmograph use SQLRooms for geospatial and graph analysis.
+excerpt: From interactive maps to graph exploration, DuckDB makes it possible to analyze data without a database server. Ilya Boyandin shares how this approach led to SQLRooms, a toolkit for building analytics applications that bring data, visualizations, and AI-assisted analysis together on the user's machine.
 tag: using-duckdb
 ---
 
@@ -24,7 +24,7 @@ As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL quer
 
 ## From a Side Project to SQLRooms
 
-Much of Flowmap City’s data-loading and interface code was useful beyond mobility analysis. Ilya extracted those pieces into SQLRooms, which he continues to develop as an open-source project.
+Much of Flowmap City's data-loading and interface code was useful beyond mobility analysis. Ilya extracted those pieces into SQLRooms, which he continues to develop as an open-source project.
 
 [SQLRooms](https://sqlrooms.org/) is a modular toolkit for building DuckDB-powered analytics applications in React. It provides building blocks for loading data, writing SQL, displaying tables, creating visualizations, and integrating AI assistants. Developers can combine these pieces with their own components.
 
@@ -42,13 +42,13 @@ At Foursquare, Ilya's team has been developing [Foursquare Spatial Desktop](http
 
 ![Foursquare Spatial Desktop](https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/fsq-spatial-desktop-earthquakes.webp)
 
-Modern laptops have substantial computing power and GPUs well suited to visualization, Ilya adds. **“I’m seeing renewed interest in applications that keep data and computation on the user’s own machine.”**
+Modern laptops have substantial computing power and GPUs well suited to visualization, Ilya adds. **“I'm seeing renewed interest in applications that keep data and computation on the user's own machine.”**
 
 ### Dynamic Tiling in Spatial Desktop
 
-Spatial Desktop uses [deck.gl](https://deck.gl/) to render maps, but drawing millions of features at once can slow things down. The app addresses this with dynamic tiling powered by DuckDB’s [spatial extension]({% link docs/2.0/core_extensions/spatial/overview.md %}).
+Spatial Desktop uses [deck.gl](https://deck.gl/) to render maps, but drawing millions of features at once can slow things down. The app addresses this with dynamic tiling powered by DuckDB's [spatial extension]({% link docs/2.0/core_extensions/spatial/overview.md %}).
 
-Map tiles are often prepared in advance for fast loading. Spatial Desktop can also generate tiles from users’ own datasets on demand, using the local DuckDB database, so users can start exploring without preparing a tileset first. For each requested tile, it selects nearby features and takes a random sample to keep dense tiles manageable. It also simplifies lines and polygons according to the zoom level, retaining more detail as the user zooms in.
+Map tiles are often prepared in advance for fast loading. Spatial Desktop can also generate tiles from users' own datasets on demand, using the local DuckDB database, so users can start exploring without preparing a tileset first. For each requested tile, it selects nearby features and takes a random sample to keep dense tiles manageable. It also simplifies lines and polygons according to the zoom level, retaining more detail as the user zooms in.
 
 <video src="https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/fsq-spatial-desktop-dynamic-tiling-4-1500.mp4" controls muted loop playsinline style="width: 100%; height: auto;"></video>
 
