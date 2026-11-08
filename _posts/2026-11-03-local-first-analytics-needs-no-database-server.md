@@ -5,7 +5,7 @@ authors:
   - Ilya Boyandin in conversation with Geertjan Wielenga & Tim Cox
 thumb: /images/blog/thumbs/spatial-joins.svg
 image: /images/blog/thumbs/spatial-joins.png
-excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local analytical applications, which was used to build Foursquare Spatial Desktop, a geospatial analytics app, and Cosmograph, a browser-native graph analytics tool.
+excerpt: Ilya Boyandin first used DuckDB in a geospatial side project that analyzed data in the browser with no database backend. He later turned that setup into SQLRooms, an open-source framework for local analytical applications, which was used to build Foursquare Spatial Desktop, a geospatial analytics app, and Cosmograph, a high performance browser-native graph analytics tool.
 tag: using-duckdb
 ---
 
@@ -38,7 +38,7 @@ The quickest way in is the [minimal example](https://sqlrooms.org/examples), a s
 
 ## Graph Analytics on the Fly with Cosmograph
 
-[Cosmograph](https://ilya.boyandin.me/p/cosmograph) is another project built on the SQLRooms framework. It's a tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen; Ilya helped with the SQLRooms integration. It allows you to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
+[Cosmograph](https://ilya.boyandin.me/p/cosmograph) is another project built on the SQLRooms framework. It's a high performance tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen; Ilya helped with the SQLRooms integration. It allows you to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
 
 <video src="https://ilya.boyandin.me/media/projects/cosmograph/cosmograph.mp4"
        controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
