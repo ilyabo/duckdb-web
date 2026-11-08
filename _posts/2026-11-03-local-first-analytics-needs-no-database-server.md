@@ -14,7 +14,7 @@ tag: using-duckdb
 ## How DuckDB Entered the Picture
 
 Ilya first used DuckDB in [Flowmap City](https://www.Flowmap City/), a side project for [visualizing mobility flows](https://ilya.boyandin.me/p/flowmap-city) that he still maintains.
-With a small budget, Ilya wanted to keep Flowmap City easy to run with low infrastructure requirements. Thanks to DuckDB's [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}), Flowmap City can execute queries directly in end-user's browser without a database server. Users can upload their data files which are then saved as Parquet files in an S3 object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using [presigned HTTPS URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html), and can query them then.
+With a small budget, Ilya wanted to keep Flowmap City easy to run with low infrastructure requirements. Thanks to DuckDB's [WebAssembly build]({% link docs/2.0/clients/wasm/overview.md %}), Flowmap City can execute queries directly in end-user's browser without a database server. Users can upload their data files which are then saved as Parquet files in an S3 object storage. When someone opens a project, the app loads the Parquet files from S3 into DuckDB-Wasm using [presigned HTTPS URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html). Once loaded into DuckDB the data can queried directly in browser.
 
 As users pan, zoom, or change filters in Flowmap City, DuckDB-Wasm runs SQL queries in the browser to update the map. A single interaction can trigger a number of queries preparing the data for the current viewport:
 
@@ -36,30 +36,19 @@ Ilya's interest in local-first software shaped the framework. **“You should ow
 
 The quickest way in is the [minimal example](https://sqlrooms.org/examples), a small Vite and React app that loads a CSV file and runs SQL queries against it.
 
-## Graph Analytics on the Fly with Cosmograph
-
-[Cosmograph](https://ilya.boyandin.me/p/cosmograph) is another project built on the SQLRooms framework. It's a high performance tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen; Ilya helped with the SQLRooms integration. It allows you to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
-
-<video src="https://ilya.boyandin.me/media/projects/cosmograph/cosmograph.mp4"
-       controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
-
-Cosmograph has been tested with datasets ranging from tens of thousands of points to several million. Previously, it was practically impossible to have an analytical workflow in the browser that could manage such large amounts of data due to the browser's memory and processing limits. With DuckDB WASM, we were able to parse huge data files without blocking the main thread or consuming browser page memory. Moreover, DuckDB's fast engine allows us to perform all sorts of summarization and filtering queries on the fly with unprecedented performance. Furthermore, the data is stored in a columnar format and can often be passed to the GPU for rendering without much additional processing.
-
-## When the Agent Writes the SQL
-
-Work on Cosmograph started around the time AI agents became usable. **“This combination of SQL and AI agents is actually quite powerful,”** Ilya says. **“SQL has such a long history, so many documents on the web explaining how to use it, and LLMs are pretty good at generating it.”** Users ask a question and the agent writes and runs the DuckDB queries, so they don't need to know SQL.
-
-The SQLRooms-powered AI Assistant allows you to analyze your data while minimally sharing it with AI providers. An agent writes SQL queries and chart schemas, then the framework runs and renders everything.
-
 ## Putting SQLRooms to Work at Foursquare
 
-Another application built on SQLRooms is [Foursquare Spatial Desktop](https://ilya.boyandin.me/p/fsq-spatial-desktop), a free desktop application for visualizing geospatial data. ~~Anyone can register and use it with their own data. Only the embedded AI agent is paid. Foursquare also uses SQLRooms for internal analysis tools.~~
+At Foursquare Ilya's team has been working on [Foursquare Spatial Desktop](https://ilya.boyandin.me/p/fsq-spatial-desktop), a free desktop application for visualizing geospatial data, which is based on the SQLRooms framework. The desktop app followed [Foursquare Studio](https://studio.foursquare.com), the commercial cloud-hosted version of [kepler.gl](kepler.gl), the free client-only geospatial visualization tool maintained by Foursquare. Bringing DuckDB as the analytical engine and combining it with the visualization capabilities of kepler.gl, allowed them to develop a capable geospatial analytics tool which users can run on their own computers.
 
-Spatial Desktop followed [kepler.gl](kepler.gl), the free client-only tool, and Foursquare Studio, the commercial version hosted in the cloud. It was the first of these to use DuckDB, which Ilya proposed. **“For this particular product, I think DuckDB was just the perfect fit,”** he says. **“I wouldn't say we considered alternatives.”** SQLite is embeddable too, he says, but it is not column-oriented and was not designed for analytics on larger datasets.
+**“For this particular product, DuckDB embedded into the desktop app is just the perfect fit,”** he says. **“It enables analysis workflows which users can execute locally.”** SQLite is embeddable too, he says, but it is not column-oriented and was not designed for analytics on larger datasets.
 
-DuckDB ships with the application, so users install nothing extra. Ilya acknowledges that a desktop application makes it harder to share projects and edit them together. In exchange, queries don't wait on the network and the data stays on the user's machine. Foursquare also has no database servers to run. Modern laptops are powerful, he adds, and their GPUs are good at visualization. **“There is a bit of a resurrection of desktop applications right now.”**
+![Foursquare Spatial Desktop](https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/fsq-spatial-desktop-earthquakes.webp)
 
-Spatial Desktop has been tested with datasets from tens of thousands of points up to several gigabytes. It renders maps with deck.gl, which slows down once a map holds hundreds of thousands of objects. The team got around this with dynamic tiling built on DuckDB's [spatial extension]({% link docs/2.0/core_extensions/spatial/overview.md %}).
+Thanks to using local embedded DuckDB in the app, queries don't wait on the network and the data stays on the user's machine. Modern laptops are powerful, Ilya adds, and their GPUs are good at visualization. **“I’m seeing renewed interest in applications that keep data and computation on the user’s own machine.”**
+
+### Dynamic Tiling in Spatial Desktop
+
+Spatial Desktop renders maps with [deck.gl](https://deck.gl/), a powerful visualization library. However, it can start to slow down once a map needs to render millions of objects. The team got around this with dynamic tiling built on DuckDB's [spatial extension]({% link docs/2.0/core_extensions/spatial/overview.md %}).
 
 Web maps usually load pre-generated tiles for the area in view at the current zoom level. Spatial Desktop generates those tiles at query time instead. A query filters the features to the viewport. As the user zooms out, it simplifies polygons, and it samples the data where needed. The spatial extension's [`ST_AsMVT`]({% link docs/2.0/core_extensions/spatial/functions.md %}#st_asmvt) function then encodes the result as a binary tile in MVT, a widely supported format:
 
@@ -82,6 +71,21 @@ The app's web server then exposes an HTTP endpoint with `x,y,z` parameters which
 With this dynamic tiling approach, we the app can represent more data than can be rendered on the map at once. You can see how the tiles are loaded gradually as they are prepared on the fly:
 
 <video src="https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/fsq-spatial-desktop-dynamic-tiling-4-1500.mp4" controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
+
+## Graph Analytics on the Fly with Cosmograph
+
+[Cosmograph](https://ilya.boyandin.me/p/cosmograph) is another project built on the SQLRooms framework. It's a high performance tool for graph analytics, developed by [Nikita Rokotyan](https://rokotyan.com/) and Thor Whalen; Ilya helped with the SQLRooms integration. It allows users to visualize graphs with millions of edges directly in the browser and use SQLRooms features, like an AI assistant which generates SQL queries, to analyze your data.
+
+<video src="https://ilya.boyandin.me/media/projects/cosmograph/cosmograph-2.0.mp4"
+       controls autoplay muted loop playsinline style="width: 100%; height: auto;"></video>
+
+Cosmograph has been tested with datasets ranging from tens of thousands of points to several million. Previously, it was practically impossible to have an analytical workflow in the browser that could manage such large amounts of data due to the browser's memory and processing limits. With DuckDB WASM, we were able to parse huge data files without blocking the main thread or consuming browser page memory. DuckDB's fast engine allows us to perform all sorts of summarization and filtering queries on the fly with unprecedented performance. The data is stored in a columnar format and can often be passed to the GPU for rendering without much additional processing.
+
+## When the Agent Writes the SQL
+
+Work on Cosmograph started around the time AI agents became usable. **“This combination of SQL and AI agents is actually quite powerful,”** Ilya says. **“SQL has such a long history, so many documents on the web explaining how to use it, and LLMs are pretty good at generating it.”** Users ask a question and the agent writes and runs the DuckDB queries, so they don't need to know SQL.
+
+The SQLRooms-powered AI Assistant allows you to analyze your data while minimally sharing it with AI providers. An agent writes SQL queries and chart schemas, then the framework runs and renders everything.
 
 ## Where SQLRooms Goes Next
 
