@@ -3,8 +3,8 @@ layout: post
 title: Local Analytics Doesn't Need a Database Server
 authors:
   - Ilya Boyandin in conversation with Geertjan Wielenga & Tim Cox
-thumb: /images/blog/thumbs/spatial-joins.svg
-image: /images/blog/thumbs/spatial-joins.png
+thumb: /images/blog/thumbs/sqlrooms-local-analytics.svg
+image: /images/blog/thumbs/sqlrooms-local-analytics.png
 excerpt: From interactive maps to graph exploration, DuckDB makes it possible to analyze data without a database server. Ilya Boyandin shares how this approach led to SQLRooms, a toolkit for building analytics applications that bring data, visualizations, and AI-assisted analysis together on the user's machine.
 tag: using-duckdb
 ---
@@ -104,11 +104,11 @@ Cosmograph has been tested with datasets ranging from tens of thousands of point
 
 ## When the Agent Writes the SQL
 
-The SQLRooms integration also brought AI-assisted analysis to the apps. **“The combination of SQL and AI agents is actually quite powerful,”** Ilya says. **“SQL has a long history, there are many documents on the web explaining how to use it, so LLMs are pretty good at generating it.”**
+SQLRooms also supports AI-assisted analysis. **“The combination of SQL and AI agents is actually quite powerful,”** Ilya says. **“SQL has a long history, there are many documents on the web explaining how to use it, so LLMs are pretty good at generating it.”**
 
 Users can ask questions in natural language. The assistant generates SQL queries and chart specifications, which the application executes and renders locally. The source dataset can stay on the user's machine, while database schemas and selected query results can be shared with the AI provider to help answer questions.
 
-In Spatial Desktop, the assistant can generate SQL to retrieve data from available sources and calculate a combined suitability score. The example below uses this workflow to explore wine-growing suitability across Italy, pairing the resulting map with AI-generated regional analysis:
+In the Spatial Desktop example below, the assistant generates SQL to retrieve data from available sources and calculate a combined score for wine-growing suitability across Italy. The resulting map is accompanied by AI-generated regional analysis:
 
 ![Foursquare Spatial Desktop showing a wine-growing suitability map of Italy alongside AI-generated regional analysis](https://ilya.boyandin.me/media/projects/fsq-spatial-desktop/italy-wine-suitability-with-sidebar.webp)
 
@@ -119,7 +119,7 @@ Ilya is extending SQLRooms' workspace model so users can bring their analysis to
 <video src="https://ilya.boyandin.me/media/projects/sqlrooms/sqlrooms-cars-document.mp4"
        controls muted loop playsinline style="width: 100%; height: auto;"></video>
 
-At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, he demonstrated a SQLRooms command-line tool for working with data through a notebook-style interface and both the data and the created artifacts are saved in the same DuckDB database file. The goal is to let users open and continue work on the same analytical project through these different interfaces. The design of the CLI tool is still evolving.
+Ilya is also exploring other ways to work with these analytical projects. At [DuckCon #7]({% link _events/2026-06-24-duckcon7.html %}) in Amsterdam, he demonstrated a SQLRooms command-line tool with a notebook-style interface. It saves both the data and the analysis artifacts in a single DuckDB database file. The goal is to let users continue the same project through a graphical application or the command line. The CLI design is still evolving.
 
 ### Watch the DuckCon Talk
 
